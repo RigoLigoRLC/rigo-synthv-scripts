@@ -126,7 +126,8 @@ useSelectionBounds = {
 --         end
 
         toGroup = SV:getMainEditor():getCurrentGroup():getTarget()
-        destTime = getPlayheadTimeBlick()
+        -- Snap to nearest
+        destTime = SV:getMainEditor():getNavigation():snap(getPlayheadTimeBlick())
         -- Remember to minus the current group onset
         timeOffset = destTime - beginTime - SV:getMainEditor():getCurrentGroup():getOnset()
         
