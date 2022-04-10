@@ -1,17 +1,39 @@
 function getClientInfo()
     return {
-        name = "Copy Notes and Parameters",
-        category = "Editing",
+        name = SV:T("Copy Notes and Parameters"),
         author = "RigoLigo",
         versionNumber = 1
     }
+end
+
+function getTranslations(langCode)
+    if langCode == "zh-cn" then
+        return {
+            {"Copy Notes and Parameters", "带参数复制音符"},
+            {"No selection", "没有选择音符"},
+            {"You must select the notes to be copied.", "必须先选中要复制的音符。"},
+            {"Begin copying", "开始复制"},
+            {"Confirm copying", "确认复制"},
+            {"Timeout", "等待时间"},
+            {" secs", " 秒"},
+            {"Script will now wait for you to move your playhead and track selection to the desired destination.\\n"..
+             "Select a timeout, and click OK to continue. Click Cancel to abort.\\n\\n"..
+             "Note: Timeout of 0 will activte copying immediately.",
+             "脚本会等你把播放头和选定的轨道移动到粘贴位置。\\n请选择等待时长，单击“确定”继续。单击“取消”中止。\\n\\n"..
+             "注意：等待时间为0时，会立即触发复制操作。"},
+            {"Are you now ready for copying? Click Yes to confirm copying.\\n\\n"..
+             "Otherwise, select a timeout, and click No to continue waiting.\\n"..
+             "Click Cancel to abort.",
+             "准备好复制了吗？单击“是”开始复制。否则，可再选择一次等待时间，然后单击“否”继续等待。\\n单击“取消”中止。"}
+        }
+    end
 end
 
 function main()
     if checkHasSelection() then
         useSelectionBounds:exec()
     else
-        SV:showMessageBox("No selection", "You must select the notes to be copied.")
+        SV:showMessageBox(SV:T("No selection"), SV:T("You must select the notes to be copied."))
     end
 end
 
@@ -67,15 +89,15 @@ useSelectionBounds = {
     
     beginWaitCopy = function()
         local firstWaitForm = {
-            title = "Begin copying",
-            message = "Script will now wait for you to move your playhead and track selection to the desired destination.\n"..
+            title = SV:T("Begin copying"),
+            message = SV:T("Script will now wait for you to move your playhead and track selection to the desired destination.\n"..
                       "Select a timeout, and click OK to continue. Click Cancel to abort.\n\n"..
-                      "Note: Timeout of 0 will activte copying immediately.",
+                      "Note: Timeout of 0 will activte copying immediately."),
             buttons = "OkCancel",
             widgets = {
                 {
-                    name = "timeout", type = "Slider", label = "Timeout",
-                    format = "%.1f secs", minValue = 0, maxValue = 40, interval = 0.5, default = 10
+                    name = "timeout", type = "Slider", label = SV:T("Timeout"),
+                    format = "%.1f" .. SV:T(" secs"), minValue = 0, maxValue = 40, interval = 0.5, default = 10
                 }
             }
         }
@@ -94,15 +116,15 @@ useSelectionBounds = {
     
     confirmCopy = function()
         local confirmForm = {
-            title = "Confirm copying",
-            message = "Are you now ready for copying? Click Yes to confirm copying.\n\n"..
+            title = SV:T("Confirm copying"),
+            message = SV:T("Are you now ready for copying? Click Yes to confirm copying.\n\n"..
                       "Otherwise, select a timeout, and click No to continue waiting.\n"..
-                      "Click Cancel to abort.",
+                      "Click Cancel to abort."),
             buttons = "YesNoCancel",
             widgets = {
                 {
-                    name = "timeout", type = "Slider", label = "Timeout",
-                    format = "%.1f secs", minValue = 3, maxValue = 40, interval = 0.5, default = 10
+                    name = "timeout", type = "Slider", label = SV:T("Timeout"),
+                    format = "%.1f" .. SV:T(" secs"), minValue = 3, maxValue = 40, interval = 0.5, default = 10
                 }
             }
         }
@@ -118,13 +140,6 @@ useSelectionBounds = {
     end,
     
     doCopy = function()
-        local group = SV:getProject():getNoteGroup(groupId)
---         dbgInfo(group)
---         if group == nil then
---             SV:showMessageBox("Error", "Note group to copy from has been destroyed!")
---             return
---         end
-
         toGroup = SV:getMainEditor():getCurrentGroup():getTarget()
         -- Snap to nearest
         destTime = SV:getMainEditor():getNavigation():snap(getPlayheadTimeBlick())
