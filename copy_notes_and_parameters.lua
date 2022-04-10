@@ -2,7 +2,7 @@ function getClientInfo()
     return {
         name = SV:T("Copy Notes and Parameters"),
         author = "RigoLigo",
-        versionNumber = 1
+        versionNumber = 2
     }
 end
 
@@ -197,13 +197,10 @@ useSelectionBounds = {
             
             -- If no points found?
             if #pts == 0 then
-                -- Check value right at the head and tail. If they are not default, then add exact points.
-                if p:get(beginTime) ~= def then pts[1] = {beginTime, p:get(beginTime)} end
-                if p:get(endTime) ~= def then pts[2] = {beginTime, p:get(endTime)} end
+                -- Check value right at the head and tail and add exact points.
+                pts[1] = {beginTime, p:get(beginTime)}
+                pts[2] = {beginTime, p:get(endTime)}
             end
-            
-            -- If still no points? Meaning the value stayed default, skip this parameter.
-            if #pts == 0 then goto NextParam end
             
             -- Make the point at beginning and ending the exact values
             pts[1][2] = p:get(pts[1][1])
